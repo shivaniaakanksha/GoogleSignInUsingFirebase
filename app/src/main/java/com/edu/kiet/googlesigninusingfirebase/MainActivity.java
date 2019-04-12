@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private com.google.android.gms.common.SignInButton signInButton;
-    private Button disconnectButton;
     private Button signOutButton;
 
     @Override
@@ -61,12 +60,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
+
         mAuthListener=new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if(firebaseAuth.getCurrentUser()!=null){
-                    Toast.makeText(MainActivity.this, "User already signed In", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "User already signed In", Toast.LENGTH_SHORT).show();
                     //startActivity(new Intent(MainActivity.this,dashboard.class));
                 }
 
@@ -122,4 +128,14 @@ public class MainActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(mAuthListener);
     }
 
+    private void signOut() {
+        mAuth.signOut();
+        mGoogleSignInClient.signOut().addOnCompleteListener(this,
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(MainActivity.this, "User Signed Out", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }

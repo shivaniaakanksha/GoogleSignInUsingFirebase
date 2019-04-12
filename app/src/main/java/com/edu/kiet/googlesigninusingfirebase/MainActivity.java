@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private GoogleSignInClient mGoogleSignInClient;
-
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private com.google.android.gms.common.SignInButton signInButton;
     private Button disconnectButton;
     private Button signOutButton;
@@ -60,6 +60,19 @@ public class MainActivity extends AppCompatActivity {
                 signIn();
             }
         });
+
+        mAuthListener=new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                if(firebaseAuth.getCurrentUser()!=null){
+                    Toast.makeText(MainActivity.this, "User already signed In", Toast.LENGTH_SHORT).show();
+                    //startActivity(new Intent(MainActivity.this,dashboard.class));
+                }
+
+            }
+        };
+
     }
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -101,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
 }
